@@ -22,7 +22,7 @@ export default async function AppLayout({
     .single();
 
   return (
-    <div className="min-h-screen lg:pl-64">
+    <div className="min-h-screen lg:pl-60">
       <MobileNav user={profile} />
       <Sidebar user={profile} />
       <main className="p-4 sm:p-6 lg:p-8" style={{ paddingBottom: "200px" }}>

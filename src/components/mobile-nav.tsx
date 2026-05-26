@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import {
-  Zap,
   LayoutDashboard,
   MessageSquare,
   Users,
@@ -18,7 +17,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { Database } from "@/types/database";
 
 type User = Database["public"]["Tables"]["users"]["Row"];
@@ -35,7 +33,6 @@ const navItems = [
 export function MobileNav({ user }: { user: User | null }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const supabase = createClient();
 
   const handleLogout = async () => {
@@ -45,65 +42,52 @@ export function MobileNav({ user }: { user: User | null }) {
 
   return (
     <div className="lg:hidden">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-primary" />
-          <span className="text-base font-bold tracking-tight">Collision</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">🔥 {user?.streak || 0} · ⚡ {user?.xp || 0}</span>
-          <Button variant="ghost" size="sm" onClick={() => setOpen(!open)}>
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background sticky top-0 z-50">
+        <span className="text-sm font-semibold">Collision</span>
+        <button onClick={() => setOpen(!open)} className="p-1.5 rounded-md hover:bg-white/[0.05] transition-colors">
+          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        </button>
       </div>
 
-      {/* Slide-down menu */}
       {open && (
-        <div className="fixed inset-0 top-[53px] z-40 bg-background/95 backdrop-blur-sm">
-          <nav className="p-4 space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  )}
-                >
-                  <item.icon className="h-5 w-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
-
+        <div className="fixed inset-0 top-[49px] z-40 bg-background">
+          <nav className="p-3 space-y-0.5">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors",
+                  pathname === item.href
+                    ? "bg-white/[0.08] text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            ))}
             {user?.role === "admin" && (
               <Link
                 href="/admin"
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors",
                   pathname.startsWith("/admin")
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? "bg-white/[0.08] text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Shield className="h-5 w-5" />
-                Admin Panel
+                <Shield className="h-4 w-4" />
+                Command Center
               </Link>
             )}
-
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary w-full"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-muted-foreground hover:text-foreground w-full transition-colors"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4" />
               Sign Out
             </button>
           </nav>

@@ -1,9 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Trophy, Medal, Crown, Flame } from "lucide-react";
+import { motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 import type { Database } from "@/types/database";
 
 type Agent = Pick<
@@ -16,126 +14,60 @@ interface LeaderboardContentProps {
   currentUserId: string;
 }
 
-const levelColors: Record<string, string> = {
-  rookie: "text-muted-foreground",
-  operator: "text-blue-400",
-  growth_agent: "text-purple-400",
-  narrative_captain: "text-orange-400",
-  ecosystem_lead: "text-yellow-400",
-};
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.03 } },
+} as const;
 
-const rankIcons = [
-  <Crown key="1" className="h-5 w-5 text-yellow-400" />,
-  <Medal key="2" className="h-5 w-5 text-gray-300" />,
-  <Medal key="3" className="h-5 w-5 text-amber-600" />,
-];
+const item = {
+  hidden: { opacity: 0, y: 4 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] } },
+} as const;
 
 export function LeaderboardContent({ agents, currentUserId }: LeaderboardContentProps) {
   const currentUserRank = agents.findIndex((a) => a.id === currentUserId) + 1;
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Trophy className="h-7 w-7 text-yellow-500" />
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 max-w-2xl">
+      <motion.div variants={item}>
+        <h1 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-muted-foreground" />
           Leaderboard
         </h1>
-        <p className="text-muted-foreground mt-1">
-          Top growth agents ranked by XP. Your rank: #{currentUserRank || "—"}
+        <p className="text-xs text-muted-foreground mt-1">
+          Your rank: #{currentUserRank || "—"}
         </p>
-      </div>
+      </motion.div>
 
-      {/* Top 3 Podium */}
-      {agents.length >= 3 && (
-        <div className="grid grid-cols-3 gap-4">
-          {[1, 0, 2].map((idx) => {
-            const agent = agents[idx];
-            if (!agent) return null;
-            const isCenter = idx === 0;
-            return (
-              <Card
-                key={agent.id}
-                className={`border-border/50 ${
-                  isCenter ? "ring-2 ring-yellow-500/30 -mt-4" : ""
-                } ${agent.id === currentUserId ? "bg-primary/5" : ""}`}
-              >
-                <CardContent className="pt-6 text-center">
-                  <div className="flex justify-center mb-2">
-                    {rankIcons[idx]}
-                  </div>
-                  <Avatar className="h-12 w-12 mx-auto mb-2">
-                    <AvatarFallback className="bg-primary/20 text-primary">
-                      {agent.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="text-sm font-semibold truncate">{agent.name}</p>
-                  <p className={`text-xs capitalize ${levelColors[agent.level || "rookie"]}`}>
-                    {agent.level?.replace("_", " ")}
-                  </p>
-                  <p className="text-lg font-bold mt-2">{agent.xp} XP</p>
-                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                    <Flame className="h-3 w-3 text-orange-500" />
-                    {agent.streak} day streak
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Full List */}
-      <Card className="border-border/50">
-        <CardHeader>
-          <CardTitle className="text-base">All Agents</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-1">
-            {agents.map((agent, idx) => (
-              <div
-                key={agent.id}
-                className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
-                  agent.id === currentUserId
-                    ? "bg-primary/10 border border-primary/20"
-                    : "hover:bg-secondary/50"
-                }`}
-              >
-                <span className="text-lg font-bold text-muted-foreground w-8 text-center">
-                  {idx + 1}
-                </span>
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-secondary text-xs">
-                    {agent.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium truncate">
-                      {agent.name}
-                      {agent.id === currentUserId && (
-                        <span className="text-primary ml-1">(you)</span>
-                      )}
-                    </p>
-                    <Badge
-                      variant="secondary"
-                      className={`text-xs capitalize ${levelColors[agent.level || "rookie"]}`}
-                    >
-                      {agent.level?.replace("_", " ")}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold">{agent.xp} XP</p>
-                  <p className="text-xs text-muted-foreground flex items-center justify-end gap-1">
-                    <Flame className="h-3 w-3 text-orange-500" />
-                    {agent.streak}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <motion.div variants={item} className="rounded-lg border border-border bg-card divide-y divide-border">
+        {agents.map((agent, idx) => (
+          <motion.div
+            key={agent.id}
+            variants={item}
+            className={`flex items-center gap-4 px-4 py-3 transition-colors hover:bg-white/[0.02] ${
+              agent.id === currentUserId ? "bg-white/[0.04]" : ""
+            }`}
+          >
+            <span className="text-xs font-medium text-muted-foreground w-6 tabular-nums text-right">
+              {idx + 1}
+            </span>
+            <div className="h-7 w-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+              {agent.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {agent.name}
+                {agent.id === currentUserId && <span className="text-muted-foreground ml-1 text-xs">(you)</span>}
+              </p>
+              <p className="text-[10px] text-muted-foreground capitalize">{agent.level?.replace("_", " ")}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium tabular-nums">{agent.xp}</p>
+              <p className="text-[10px] text-muted-foreground">{agent.streak}d streak</p>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
   );
 }

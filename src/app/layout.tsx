@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Collision Growth Network",
+  title: "Collision",
   description: "The operating system for coordinated LinkedIn growth",
 };
 

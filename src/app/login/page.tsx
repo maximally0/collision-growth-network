@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Zap } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,10 +19,7 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
@@ -35,51 +31,54 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-md border-border/50 bg-card/80 backdrop-blur-sm">
-        <CardHeader className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Zap className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold tracking-tight">Collision</span>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full max-w-sm"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-lg font-semibold tracking-tight">Collision</h1>
+          <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-xs">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="h-10"
+            />
           </div>
-          <CardTitle className="text-xl">Welcome back, agent</CardTitle>
-          <CardDescription>Sign in with the credentials provided by your admin</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            Don&apos;t have credentials? Ask your admin to add you.
-          </p>
-        </CardContent>
-      </Card>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-xs">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="h-10"
+            />
+          </div>
+          {error && (
+            <p className="text-xs text-destructive">{error}</p>
+          )}
+          <Button type="submit" className="w-full h-10" disabled={loading}>
+            {loading ? "Signing in..." : "Continue"}
+          </Button>
+        </form>
+
+        <p className="text-center text-[11px] text-muted-foreground mt-6">
+          Credentials provided by your admin
+        </p>
+      </motion.div>
     </div>
   );
 }

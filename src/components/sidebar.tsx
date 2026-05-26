@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import {
-  Zap,
   LayoutDashboard,
   MessageSquare,
   Users,
@@ -15,8 +14,6 @@ import {
   LogOut,
   Shield,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/types/database";
 
 type User = Database["public"]["Tables"]["users"]["Row"];
@@ -27,10 +24,6 @@ const navItems = [
   { href: "/people", label: "People", icon: Users },
   { href: "/posting", label: "Posting", icon: PenTool },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-];
-
-const adminItems = [
-  { href: "/admin", label: "Admin Panel", icon: Shield },
 ];
 
 export function Sidebar({ user }: { user: User | null }) {
@@ -49,42 +42,27 @@ export function Sidebar({ user }: { user: User | null }) {
     .toUpperCase() || "?";
 
   return (
-    <aside className="hidden lg:flex fixed top-0 left-0 flex-col w-64 h-screen border-r border-border bg-card/50 backdrop-blur-sm z-30">
+    <aside className="hidden lg:flex fixed top-0 left-0 flex-col w-60 h-screen border-r border-border bg-background z-30">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
-        <Zap className="h-6 w-6 text-primary" />
-        <span className="text-lg font-bold tracking-tight">Collision</span>
+      <div className="px-5 py-4 border-b border-border">
+        <span className="text-sm font-semibold tracking-tight">Collision</span>
       </div>
 
-      {/* User Info */}
-      <div className="px-4 py-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback className="bg-primary/20 text-primary text-sm">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+      {/* User */}
+      <div className="px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="h-7 w-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-medium text-white/70">
+            {initials}
+          </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name}</p>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs capitalize">
-                {user?.level?.replace("_", " ")}
-              </Badge>
-            </div>
+            <p className="text-xs font-medium truncate text-foreground">{user?.name}</p>
+            <p className="text-[10px] text-muted-foreground">{user?.xp} XP · {user?.streak}d streak</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            🔥 {user?.streak || 0} day streak
-          </span>
-          <span className="flex items-center gap-1">
-            ⚡ {user?.xp || 0} XP
-          </span>
-        </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      {/* Nav */}
+      <nav className="flex-1 px-2 py-3 space-y-0.5">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -92,10 +70,10 @@ export function Sidebar({ user }: { user: User | null }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  ? "bg-white/[0.08] text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -106,45 +84,44 @@ export function Sidebar({ user }: { user: User | null }) {
 
         {user?.role === "admin" && (
           <>
-            <div className="pt-4 pb-2">
-              <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="pt-4 pb-1.5">
+              <p className="px-3 text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
                 Admin
               </p>
             </div>
-            {adminItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  )}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
+            <Link
+              href="/admin"
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors",
+                pathname.startsWith("/admin")
+                  ? "bg-white/[0.08] text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
+              )}
+            >
+              <Shield className="h-4 w-4" />
+              Command Center
+            </Link>
           </>
         )}
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-border space-y-1">
+      <div className="px-2 py-3 border-t border-border space-y-0.5">
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          className={cn(
+            "flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors",
+            pathname === "/settings"
+              ? "bg-white/[0.08] text-foreground font-medium"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
+          )}
         >
           <Settings className="h-4 w-4" />
           Settings
         </Link>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors w-full"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors w-full"
         >
           <LogOut className="h-4 w-4" />
           Sign Out
