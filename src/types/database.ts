@@ -261,6 +261,79 @@ export interface Database {
           reviewed_at?: string | null;
         };
       };
+      founders_notes: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          content: string;
+          published: boolean;
+          author_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          content: string;
+          published?: boolean;
+          author_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          content?: string;
+          published?: boolean;
+          author_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      cold_emails: {
+        Row: {
+          id: string;
+          prospect_name: string;
+          prospect_email: string;
+          company: string | null;
+          status: "draft" | "sent" | "replied" | "meeting_booked" | "closed";
+          subject: string | null;
+          notes: string | null;
+          sent_at: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          prospect_name: string;
+          prospect_email: string;
+          company?: string | null;
+          status?: "draft" | "sent" | "replied" | "meeting_booked" | "closed";
+          subject?: string | null;
+          notes?: string | null;
+          sent_at?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          prospect_name?: string;
+          prospect_email?: string;
+          company?: string | null;
+          status?: "draft" | "sent" | "replied" | "meeting_booked" | "closed";
+          subject?: string | null;
+          notes?: string | null;
+          sent_at?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

@@ -1,5 +1,20 @@
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { HubPage } from "@/components/hub/hub-page";
 
-export default function Home() {
-  redirect("/dashboard");
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  return <HubPage user={profile} authEmail={user.email || ""} />;
 }

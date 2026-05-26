@@ -45,7 +45,9 @@ export function Sidebar({ user }: { user: User | null }) {
     <aside className="hidden lg:flex fixed top-0 left-0 flex-col w-60 h-screen border-r border-border bg-background z-30">
       {/* Logo */}
       <div className="px-5 py-4 border-b border-border">
-        <span className="text-sm font-semibold tracking-tight">Collision</span>
+        <Link href="/" className="text-sm font-semibold tracking-tight hover:text-muted-foreground transition-colors">
+          ← Collision
+        </Link>
       </div>
 
       {/* User */}

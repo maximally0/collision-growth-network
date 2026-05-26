@@ -43,7 +43,7 @@ export function MobileNav({ user }: { user: User | null }) {
   return (
     <div className="lg:hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background sticky top-0 z-50">
-        <span className="text-sm font-semibold">Collision</span>
+        <Link href="/" className="text-sm font-semibold">← Collision</Link>
         <button onClick={() => setOpen(!open)} className="p-1.5 rounded-md hover:bg-white/[0.05] transition-colors">
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
